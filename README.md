@@ -32,4 +32,4 @@ This is an early prototype. The offline word map cannot translate full sentences
 
 Run `py watch_folder.py` in a second terminal. Each new `.txt` file is translated and exported under `data/outputs`. It watches locally and does not connect to Drive, Telegram, or email yet. A later n8n flow can mount/sync this folder and handle notifications.
 
-Premchand's works are generally public domain in India, but verify the status of a particular edition and translation before redistributing it. This project ships no story text.
+The practice lines in the evaluation sheet are original examples, not excerpts from Premchand. The app accepts your own plain text stories; check the rights for the specific text and edition before sharing them. This project ships no published story text.
