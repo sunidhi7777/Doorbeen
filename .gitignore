@@ -1,0 +1,9 @@
+__pycache__/
+.venv/
+.env
+.streamlit/secrets.toml
+data/*.db
+data/inbox/*
+data/outputs/*
+!data/inbox/.gitkeep
+!data/outputs/.gitkeep
