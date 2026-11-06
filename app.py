@@ -1,6 +1,9 @@
 import json
 
 import streamlit as st
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from katha import (analyze_script, connect, export_files, get_glossary,
                    review_line, save_term)
@@ -49,8 +52,10 @@ elif page == "Review queue":
                 right.write("Glossary route")
                 right.write(row["assisted"] or "Unavailable; check your Groq key.")
                 edit = st.text_area("Final wording", value=row["final"], key=f"edit-{row['id']}")
+                term = st.text_input("Term to pin for later (optional)", key=f"term-{row['id']}")
+                keep_as = st.text_input("Keep or translate it as", key=f"keep-{row['id']}")
                 if st.button("Save review", key=f"save-{row['id']}"):
-                    review_line(row["id"], edit)
+                    review_line(row["id"], edit, term, keep_as)
                     st.rerun()
 
 else:

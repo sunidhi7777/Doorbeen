@@ -14,7 +14,7 @@ LibreTranslate can be self-hosted or any compatible endpoint can be set with `LI
 
 ## What is included
 
-- SQLite glossary and review history for the current script. The LLM can suggest initial terms when configured; existing glossary decisions are preserved.
+- SQLite glossary and review history for the current script. The LLM can suggest initial terms when configured; reviewer-pinned terms are preserved.
 - English, Tamil, and Bengali target choices.
 - Risk hints for a small set of idioms/cultural references, glossary mismatches, and unusually long output.
 - Text and change report downloads.

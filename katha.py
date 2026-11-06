@@ -161,19 +161,13 @@ def analyze_script(script, target="en"):
     return mt_name or "no lines", llm_name or "no lines"
 
 
-def review_line(line_id, correction):
+def review_line(line_id, correction, term="", keep_as=""):
     with connect() as db:
-        row = db.execute("SELECT source FROM lines WHERE id=?", (line_id,)).fetchone()
-        if row is None:
-            return
         db.execute("UPDATE lines SET final=?,reviewed=1 WHERE id=?",
                    (correction.strip(), line_id))
-        # Single-word corrections can be useful glossary entries; reviewers
-        # can always edit these on the glossary page afterwards.
-        words = re.findall(r"[\w]+", row["source"], flags=re.UNICODE)
-        if len(words) == 1 and words[0] not in get_glossary() and correction.strip():
-            db.execute("INSERT OR IGNORE INTO glossary VALUES(?,?,?)",
-                       (words[0], correction.strip(), "Added from review"))
+        if term.strip() and keep_as.strip():
+            db.execute("INSERT OR REPLACE INTO glossary(source,target,note) VALUES(?,?,?)",
+                       (term.strip(), keep_as.strip(), "Pinned during line review"))
         db.commit()
 
 
