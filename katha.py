@@ -77,7 +77,7 @@ def translate_llm(text, target, context):
     key = os.getenv("GROQ_API_KEY", "").strip()
     if not key:
         return "", "GROQ_API_KEY is not set"
-    model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+    model = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
     language_name = {"en": "English", "ta": "Tamil", "bn": "Bengali"}.get(target, target)
     prompt = (
         f"Translate this Hindi story line into {language_name}. Keep meaning and voice natural. "
@@ -106,7 +106,7 @@ def suggest_terms(script):
     key = os.getenv("GROQ_API_KEY", "").strip()
     if not key:
         return 0
-    model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+    model = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
     prompt = (
         "Find recurring character names, honorifics, relationships, foods, festivals, "
         "and idioms in this Hindi story. Return only JSON with a terms array. Each item "
