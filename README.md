@@ -10,6 +10,8 @@ A small human-in-the-loop review desk for Hindi story localization. Paste a scri
 4. Copy `.env.example` to `.env`, then set credentials and service URLs if you want live translation.
 5. `streamlit run app.py`
 
+For the n8n bridge, open a second terminal and run `uvicorn api:app --host 0.0.0.0 --port 8000`. Set `KATHA_API_TOKEN` in `.env` first. Keep this API on a trusted local network; it is not intended to be exposed directly to the public internet.
+
 LibreTranslate can be self-hosted or any compatible endpoint can be set with `LIBRETRANSLATE_URL`. Set `GROQ_API_KEY` to enable the glossary-guided route. Without external services, the app uses a deliberately tiny word map to make the interface demonstrable; it is not a real translation system. The LLM route sends script lines to Groq, so use only text you are allowed to share.
 
 ## What is included
@@ -19,6 +21,7 @@ LibreTranslate can be self-hosted or any compatible endpoint can be set with `LI
 - Risk hints for a small set of idioms/cultural references, glossary mismatches, and unusually long output.
 - Text and change report downloads.
 - A local folder watcher (`watch_folder.py`) for dropping `.txt` files into `data/inbox`.
+- A FastAPI endpoint that n8n can call to analyze a script and return a review summary.
 
 ## What failed / current limits
 
@@ -30,6 +33,6 @@ This is an early prototype. The offline word map cannot translate full sentences
 
 ## Automation
 
-Run `py watch_folder.py` in a second terminal. Each new `.txt` file is translated and exported under `data/outputs`. It watches locally and does not connect to Drive, Telegram, or email yet. A later n8n flow can mount/sync this folder and handle notifications.
+Import `n8n/katha-lens-webhook.json` into n8n and activate it. The webhook accepts JSON such as `{"script":"राम राम भैया","target":"en"}`. In the HTTP Request node, replace the bearer token placeholder with the same `KATHA_API_TOKEN` from the app's `.env`. The workflow sends the script to the local API and returns the line flags and summary. To send a Telegram note, connect a Telegram credential and replace the chat ID placeholder. For a Drive-folder flow, add n8n's Google Drive Trigger and file download/extraction nodes before this webhook's HTTP Request step. The older local watcher is still available as a simple alternative.
 
 The practice lines in the evaluation sheet are original examples, not excerpts from Premchand. The app accepts your own plain text stories; check the rights for the specific text and edition before sharing them. This project ships no published story text.

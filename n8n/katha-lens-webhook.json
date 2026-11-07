@@ -1,0 +1,96 @@
+{
+  "name": "Katha-Lens review intake",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "katha-lens",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "d13a5e59-72a6-4a80-a946-bd51b6d87210",
+      "name": "Receive script",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "katha-lens-intake"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/analyze",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_WITH_KATHA_API_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ script: $json.body.script, target: $json.body.target || 'en' }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "a9ad3f70-47cf-4f29-b471-522654d29192",
+      "name": "Analyze with Katha-Lens",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "7df8eb08-b986-4767-914f-095ac92b4246",
+      "name": "Return review summary",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [760, 190]
+    },
+    {
+      "parameters": {
+        "chatId": "REPLACE_WITH_REVIEWER_CHAT_ID",
+        "text": "={{ 'Katha-Lens processed ' + $json.total_lines + ' lines. ' + $json.flagged_lines + ' need review. Open the local review queue to approve or edit them.' }}",
+        "additionalFields": {}
+      },
+      "id": "7dbce7bf-b80e-41d2-b36f-ad3dac4476f3",
+      "name": "Notify reviewer (optional)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [760, 410],
+      "continueOnFail": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "SET_THIS_IN_N8N",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Receive script": {
+      "main": [[{"node": "Analyze with Katha-Lens", "type": "main", "index": 0}]]
+    },
+    "Analyze with Katha-Lens": {
+      "main": [[
+        {"node": "Return review summary", "type": "main", "index": 0},
+        {"node": "Notify reviewer (optional)", "type": "main", "index": 0}
+      ]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "15ea0d89-5b27-46c9-bd4e-3f637fbe600d",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
